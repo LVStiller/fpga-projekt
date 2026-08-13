@@ -54,8 +54,12 @@ begin
 
         -- Warten bis done kommt
         wait until done = '1';
-        report "DONE erreicht! Ciphertext: " &
-            to_hstring(ciphertext);
+        wait until done = '1';
+        assert ciphertext = x"C69BE9BB"
+            report "FEHLER! Ciphertext ist " & to_hstring(ciphertext) &
+            ", erwartet: C69BE9BB"
+            severity failure;
+        report "Testvektor korrekt: " & to_hstring(ciphertext);
 
         wait for 5 * CLK_PERIOD;
         report "Testbench fertig." severity note;
