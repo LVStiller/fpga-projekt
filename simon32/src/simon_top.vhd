@@ -41,13 +41,24 @@ architecture rtl of simon_top is
     type state_t is (RECV, ENCRYPT, SEND_BYTE, WAIT_TX);
     signal state : state_t;
 
+    -- Synchronizer gegen Metastabilitaet am asynchronen RX-Eingang
+    signal rx_sync1, rx_sync2 : std_logic := '1';
+
 begin
+
+    sync_proc : process(clk)
+    begin
+        if rising_edge(clk) then
+            rx_sync1 <= uart_rx;
+            rx_sync2 <= rx_sync1;
+        end if;
+    end process;
 
     rx_inst : entity work.uart_rx
         generic map ( CLKS_PER_BIT => CLKS_PER_BIT )
         port map (
             clk => clk, rst => rst,
-            rx => uart_rx,
+            rx => rx_sync2,
             data_out => rx_data, valid => rx_valid
         );
 
