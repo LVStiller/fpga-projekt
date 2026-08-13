@@ -2,7 +2,7 @@
 """UART-Test fuer Simon32/64 auf dem BASYS3.
 
 Schickt Schluessel + Klartext, prueft den Ciphertext
-gegen den offiziellen NSA-Testvektor.
+gegen den offiziellen NSA-Testvektor.d
 """
 
 import sys
