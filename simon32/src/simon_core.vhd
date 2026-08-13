@@ -104,7 +104,7 @@ begin
         end if;
     end process;
 
-    -- Ausgaenge (kombinatorisch aus dem Zustand abgeleitet)
+    -- Ausgänge (kombinatorisch aus dem Zustand abgeleitet)
     busy       <= '1' when state = RUN else '0';
     done       <= '1' when state = DONE_ST else '0';
     ciphertext <= std_logic_vector(x_reg) & std_logic_vector(y_reg);
