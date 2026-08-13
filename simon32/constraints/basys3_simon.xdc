@@ -26,3 +26,7 @@ set_property PACKAGE_PIN U16 [get_ports led_busy]
 set_property IOSTANDARD LVCMOS33 [get_ports led_busy]
 set_property PACKAGE_PIN E19 [get_ports led_done]
 set_property IOSTANDARD LVCMOS33 [get_ports led_done]
+
+## QSPI-Flash-Konfiguration (Boot vom Flash-Speicher)
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
+set_property CONFIG_MODE SPIx4 [current_design]
