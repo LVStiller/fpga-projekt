@@ -1,33 +1,45 @@
+# ============================================================
+# Makefile fuer Simon32/64 – NVC Simulation
+# Verwendung:
+#   make all          → alle Testbenches ausfuehren
+#   make core         → Simon-Core (Basisvariante) testen
+#   make core_x2      → entrollte Variante testen
+#   make uart         → UART-Empfaenger + Loopback testen
+#   make top          → System-Testbench (UART + Core)
+#   make clean        → Build-Artefakte loeschen
+# ============================================================
+
 NVC = nvc
-GTKWAVE = surfer
 
-SRC = src/adder_top.vhd src/adder_top_tb.vhd
-TB = adder_top_tb
-VCD = waveform.vcd
-SIM_TIME = 500ns
+SRC = src
+TB  = tb
 
-all: compile sim
-	@echo ""
-	@echo "=== Fertig! ==="
-	@echo "Oeffne die Waveform mit: make wave"
+.PHONY: all core core_x2 uart top clean
 
-compile:
-	@echo "=== VHDL analysieren ==="
-	$(NVC) --std=2008 -a $(SRC)
-	@echo "=== Elaborieren ==="
-	$(NVC) --std=2008 -e $(TB)
+all: core core_x2 uart top
 
-sim: compile
-	@echo "=== Simulation starten ($(SIM_TIME)) ==="
-	$(NVC) -r $(TB) --stop-time=$(SIM_TIME) --format=vcd --wave=$(VCD)
+core:
+	$(NVC) -a $(SRC)/simon_core.vhd $(TB)/tb_simon_core.vhd
+	$(NVC) -e tb_simon_core
+	$(NVC) -r tb_simon_core
 
-wave: $(VCD)
-	@echo "=== GTKWave oeffnen ==="
-	$(GTKWAVE) $(VCD) &
+core_x2:
+	$(NVC) -a $(SRC)/simon_core_x2.vhd $(TB)/tb_simon_core_x2.vhd
+	$(NVC) -e tb_simon_core_x2
+	$(NVC) -r tb_simon_core_x2
+
+uart:
+	$(NVC) -a $(SRC)/uart_rx.vhd $(SRC)/uart_tx.vhd
+	$(NVC) -a $(TB)/tb_uart_rx.vhd $(TB)/tb_uart_loopback.vhd
+	$(NVC) -e tb_uart_rx
+	$(NVC) -r tb_uart_rx
+	$(NVC) -e tb_uart_loopback
+	$(NVC) -r tb_uart_loopback
+
+top: uart core
+	$(NVC) -a $(SRC)/simon_top.vhd $(TB)/tb_simon_top.vhd
+	$(NVC) -e tb_simon_top
+	$(NVC) -r tb_simon_top
 
 clean:
-	@echo "=== Aufraeumen ==="
-	rm -rf work
-	rm -f $(VCD)
-
-.PHONY: all compile sim wave clean
+	rm -rf work *.fst
